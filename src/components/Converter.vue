@@ -22,7 +22,7 @@
     </div>
     <div class="display-result d-flex justify-content-center text-success">
     </div>
-    <Graph v-if="showComponent" :selectedOptionFrom="state.selectedOptionFrom"/>
+    <Graph v-if="showComponent" :selectedOptionFrom="state.selectedOptionFrom" :selectedOptionTo="state.selectedOptionTo"/>
   </main>
 </template>
 

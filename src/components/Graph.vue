@@ -1,6 +1,9 @@
 <template>
   <div>
-    <p>oi</p>
+    <div v-for="(dateData, date) in currency" :key="date">
+      <p class="flex bg-purple-900">{{ date }}</p>
+      <p> {{ dateData[selectedOptionTo]}}</p>
+    </div>
   </div>
 </template>
 
@@ -12,10 +15,11 @@ export default {
   name: 'GraphConverter',
   props: {
     selectedOptionFrom: String,
+    selectedOptionTo: String,
   },
 
   setup(props) {
-    const teste = ref([]);
+    const currency = ref({});
 
     function formatarDataParaAAAA_MM_DD(data) {
       const ano = data.getFullYear();
@@ -24,17 +28,18 @@ export default {
       return  `${ano}-${mes}-${dia}`;
     }
     const data = new Date();
-    const data2 = new Date();
-    const diasParaSubtrair = 7;
+    const diasParaSubtrair = '3';
     data.setDate(data.getDate() - diasParaSubtrair);
     const dataFormatada = formatarDataParaAAAA_MM_DD(data);
-    const datahoje = formatarDataParaAAAA_MM_DD(data2);
+    const datahoje = formatarDataParaAAAA_MM_DD(new Date());
 
     const fetchEita = () =>
-      api.get(`/timeseries?&start_date=${dataFormatada}1&end_date=${datahoje}&base=${props.selectedOptionFrom}`).then((res) => 
-      (teste.value = res.data.rates))
-      console.log(teste)
+      api.get(`/timeseries?&start_date=${dataFormatada}1&end_date=${datahoje}&base=${props.selectedOptionFrom}`).then((res) => {
+        currency.value = res.data.rates
+      })
     onMounted(fetchEita)
-  }
+
+    return { currency }
+  },
 }
 </script>
