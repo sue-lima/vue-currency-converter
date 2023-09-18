@@ -1,5 +1,5 @@
 <template>
-  <main class="grow flex justify-center items-center">
+  <main class="grow flex flex-col justify-center items-center">
     <div class="rounded-xl p-5 gap-2 flex border text-center">
       <input v-model="state.amountValue" type="number" id="amount" step="0.01" placeholder="Enter the amount"/>
       <span v-if="v$.amountValue.$error">{{ customInputMessage }}</span>
@@ -39,6 +39,14 @@ export default {
     Graph,
   },
 
+  data() {
+    return {
+      customInputMessage: 'This field is required.',
+      customSelectMessage: 'Please choose the currency.',
+      showComponent: false,
+    };
+  },
+
   setup() {
     const symbol = ref([])
     const state = reactive({
@@ -72,39 +80,35 @@ export default {
     return { symbol, state, v$ }
   },
 
-  data() {
-    return {
-      customInputMessage: 'This field is required.',
-      customSelectMessage: 'Please choose the currency.',
-      showComponent: false,
-    };
-  },
-
   methods: {
-    exibirValorSelecionado() {
-      api.get(`/latest?/source=ecb&base=${this.state.selectedOptionFrom}`)
-        .then((response) => {
-          const amount = this.state.amountValue;
-          const currencyTo = this.state.selectedOptionTo;
-          const currencyFrom = this.state.selectedOptionFrom;
-          const rate = response.data.rates[currencyTo];
-          this.v$.$validate()
-          function convert(amount, rate) {
-            return amount * rate;
-          }
-          if (!this.v$.$error) {
-            const result = convert(amount, rate);
-            document.querySelector(".display-result").innerHTML = `${amount} ${currencyFrom.toUpperCase()} equal to ${currencyTo} ${result.toFixed(2)}`;
-            this.showComponent = true;
-          } else {
-            alert('Select all fields correctly');
-          }
-        })
-        .catch((error) => {
-          console.log("Error: ", error);
-        });
-      return false;
+    async exibirValorSelecionado() {
+      try {
+        const response = await api.get(`/latest?/source=ecb&base=${this.state.selectedOptionFrom}`);
+        const amount = this.state.amountValue;
+        const currencyTo = this.state.selectedOptionTo;
+        const currencyFrom = this.state.selectedOptionFrom;
+        const rate = response.data.rates[currencyTo];
+
+        this.v$.$validate();
+
+        if (!this.v$.$error) {
+          const result = this.convertCurrency(amount, rate);
+          this.updateResultDisplay(amount, currencyFrom, currencyTo, result);
+          this.showComponent = true;
+        } else {
+          alert('Select all fields correctly');
+        }
+      } catch (error) {
+        console.error("Error:", error);
+      }
     },
+    convertCurrency(amount, rate) {
+      return amount * rate;
+    },
+    updateResultDisplay(amount, currencyFrom, currencyTo, result) {
+      const resultDisplay = `${amount} ${currencyFrom.toUpperCase()} equal to ${currencyTo} ${result.toFixed(2)}`;
+      document.querySelector(".display-result").innerHTML = resultDisplay;
+    }
   }
 }
 </script>
