@@ -14,7 +14,7 @@
   </div>
 </template>
 
-<script lang="js">
+<script>
 import { Line as Nu } from 'vue-chartjs'
 import { Chart as ChartJS, Title, Tooltip, Legend, LineElement, LinearScale, CategoryScale, PointElement } from 'chart.js'
 import api from '@/services/api'

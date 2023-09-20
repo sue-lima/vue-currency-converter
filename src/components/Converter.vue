@@ -10,7 +10,7 @@
         </option>
       </select>
       <span v-if="v$.selectedOptionFrom.$error">{{ customSelectMessage }}</span>
-      <p>--</p>
+      <img src="../assets/reverter.png" alt="" @click="reverse()" class="w-7 h-7 cursor-pointer">
       <select v-model="state.selectedOptionTo" id="currency-to" required>
         <option value="" disabled selected hidden>Please Choose</option>
         <option v-for="(currency, i) in symbol" :key="i" :value="currency.code">
@@ -108,7 +108,14 @@ export default {
     updateResultDisplay(amount, currencyFrom, currencyTo, result) {
       const resultDisplay = `${amount} ${currencyFrom.toUpperCase()} equal to ${currencyTo} ${result.toFixed(2)}`;
       document.querySelector(".display-result").innerHTML = resultDisplay;
-    }
+    },
+    reverse() {
+      const tempOption = this.state.selectedOptionFrom;
+      this.state.selectedOptionFrom = this.state.selectedOptionTo;
+      this.state.selectedOptionTo = tempOption;
+      this.exibirValorSelecionado();
+      this.showComponent = false;
+    },
   }
 }
 </script>
