@@ -1,7 +1,7 @@
 import axios from "axios";
 
 const api = axios.create({
-  baseURL: "https://api.exchangerate.host/",
+  baseURL: "https://api.currencyapi.com/",
 });
 
 export default api
