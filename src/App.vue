@@ -2,7 +2,6 @@
 import DarkMode from './components/DarkMode.vue'
 import Attribution from './components/Attribution.vue'
 import Converter from './components/Converter.vue'
-//import Graph from './components/Graph.vue'
 
 export default {
   name: 'App',
@@ -10,7 +9,6 @@ export default {
     DarkMode,
     Attribution,
     Converter,
-    //Graph,
   }
 }
 </script>

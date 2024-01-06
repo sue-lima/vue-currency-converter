@@ -1,33 +1,35 @@
 <template>
   <main class="grow flex flex-col justify-center items-center">
-    <div class="rounded-xl p-5 gap-2 flex border text-center">
-      <input v-model="state.amountValue" type="number" id="amount" step="0.01" placeholder="$"/>
-      <span v-if="v$.amountValue.$error">{{ customInputMessage }}</span>
-      <select v-model="state.selectedOptionFrom" id="currency-from" required>
-        <option value="" disabled selected hidden>Please Choose</option>
-        <option v-for="(currency, i) in symbol" :key="i" :value="currency.code">
-          {{ currency.code }} - {{ currency.name }}
-        </option>
-      </select>
-      <span v-if="v$.selectedOptionFrom.$error">{{ customSelectMessage }}</span>
-      <img src="../assets/transfer.png" alt="" @click="reverse()" class="w-7 h-7 cursor-pointer">
-      <select v-model="state.selectedOptionTo" id="currency-to" required>
-        <option value="" disabled selected hidden>Please Choose</option>
-        <option v-for="(currency, i) in symbol" :key="i" :value="currency.code">
-          {{ currency.code }} - {{ currency.name }}
-        </option>
-      </select>
-      <span v-if="v$.selectedOptionTo.$error">{{ customSelectMessage }}</span>
-      <button @click="exibirValorSelecionado" class="bg-gray-500 p-3">Converter</button>
+    <div class=" bg-pink-500 p-12 rounded-xl">
+      <div class="gap-2 flex text-center">
+        <input v-model="state.amountValue" type="number" id="amount" step="0.01" placeholder="$"/>
+        <span v-if="v$.amountValue.$error">{{ customInputMessage }}</span>
+        <select v-model="state.selectedOptionFrom" id="currency-from" required>
+          <option value="" disabled selected hidden>Please Choose</option>
+          <option v-for="(currency, i) in symbol" :key="i" :value="currency.code">
+            {{ currency.code }} - {{ currency.name }}
+          </option>
+        </select>
+        <span v-if="v$.selectedOptionFrom.$error">{{ customSelectMessage }}</span>
+        <img src="../assets/transfer.png" alt="" @click="reverse()" class="w-7 h-7 cursor-pointer">
+        <select v-model="state.selectedOptionTo" id="currency-to" required>
+          <option value="" disabled selected hidden>Please Choose</option>
+          <option v-for="(currency, i) in symbol" :key="i" :value="currency.code">
+            {{ currency.code }} - {{ currency.name }}
+          </option>
+        </select>
+        <span v-if="v$.selectedOptionTo.$error">{{ customSelectMessage }}</span>
+        <button @click="showConvertResult" class="bg-pink-800 text-white font-bold rounded-2xl p-3">Convert</button>
+      </div>
+      <div v-if="state.selectedOptionFrom" class="flex items-center justify-evenly">
+        <img :src="`../../src/assets/flags/${state.selectedOptionFrom.toLowerCase()}.svg`" alt="" class="w-48 h-48">
+        <img src="../assets/rightarrow.png" alt="" class="w-11 h-11">
+        <img v-if="state.selectedOptionTo" :src="`../../src/assets/flags/${state.selectedOptionTo.toLowerCase()}.svg`" alt="" class="w-48 h-48">
+      </div>
+      <div class="display-result d-flex justify-content-center text-success">
+      </div>
+      <Graph v-if="showComponent" :selectedOptionFrom="state.selectedOptionFrom" :selectedOptionTo="state.selectedOptionTo"/>
     </div>
-    <div v-if="state.selectedOptionFrom" class="flex items-center justify-around">
-      <img :src="`../../src/assets/flags/${state.selectedOptionFrom.toLowerCase()}.svg`" alt="" class="w-48 h-48">
-      <img src="../assets/rightarrow.png" alt="" class="w-11 h-11">
-      <img v-if="state.selectedOptionTo" :src="`../../src/assets/flags/${state.selectedOptionTo.toLowerCase()}.svg`" alt="" class="w-48 h-48">
-    </div>
-    <div class="display-result d-flex justify-content-center text-success">
-    </div>
-    <Graph v-if="showComponent" :selectedOptionFrom="state.selectedOptionFrom" :selectedOptionTo="state.selectedOptionTo"/>
   </main>
 </template>
 
@@ -71,15 +73,26 @@ export default {
 
     const v$ = useVuelidate(rules, state)
 
-    const fetchSymbol = () =>
-      api.get(`v3/currencies?apikey=${apiKey}`).then((response) => {
-        if (response.status === 200) {
-          const objetoDaAPI = response.data.data
-          symbol.value = Object.values(objetoDaAPI)
+    const fetchSymbol = async () => {
+      try {
+        const cachedData = localStorage.getItem('symbolData');
+        
+        if (cachedData) {
+          symbol.value = JSON.parse(cachedData);
         } else {
-          throw new Error('A solicitação GET à API falhou')
+          const response = await api.get(`v3/currencies?apikey=${apiKey}`);
+          if (response.status === 200) {
+            const objetoDaAPI = response.data.data;
+            symbol.value = Object.values(objetoDaAPI);
+            localStorage.setItem('symbolData', JSON.stringify(symbol.value));
+          } else {
+            throw new Error('A solicitação GET à API falhou');
+          }
         }
-      })
+      } catch (error) {
+        console.error('Erro ao obter dados do cache ou da API:', error);
+      }
+    };
 
     onMounted(fetchSymbol)
 
@@ -87,8 +100,7 @@ export default {
   },
 
   methods: {
-
-    async exibirValorSelecionado() {
+    async showConvertResult() {
       try {
         const response = await api.get(`v3/latest?apikey=${this.apiKey}&currencies=${this.state.selectedOptionTo}&base_currency=${this.state.selectedOptionFrom}`);
         const amount = this.state.amountValue;
@@ -120,7 +132,7 @@ export default {
       const tempOption = this.state.selectedOptionFrom;
       this.state.selectedOptionFrom = this.state.selectedOptionTo;
       this.state.selectedOptionTo = tempOption;
-      this.exibirValorSelecionado();
+      this.showConvertResult();
       this.showComponent = false;
     },
   }
