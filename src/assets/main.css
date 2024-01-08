@@ -8,6 +8,7 @@
   display: flex;
   flex-flow: column;
   height: 100vh;
-  background-color: #f79bd3;
+  background-color: #f8f0e5;
   font-family: 'Akshar', sans-serif;
+  color: #102c57;
 }

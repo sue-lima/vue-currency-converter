@@ -1,6 +1,6 @@
 <template>
   <main class="grow flex flex-col justify-center items-center">
-    <div class=" bg-pink-500 p-12 rounded-xl">
+    <div class=" bg-gold-300 p-12 rounded-xl">
       <div class="gap-2 flex text-center">
         <input v-model="state.amountValue" type="number" id="amount" step="0.01" placeholder="$"/>
         <span v-if="v$.amountValue.$error">{{ customInputMessage }}</span>
@@ -19,12 +19,12 @@
           </option>
         </select>
         <span v-if="v$.selectedOptionTo.$error">{{ customSelectMessage }}</span>
-        <button @click="showConvertResult" class="bg-pink-800 text-white font-bold rounded-2xl p-3">Convert</button>
+        <button @click="showConvertResult" class="bg-gold-400 text-white font-bold rounded-2xl p-3">Convert</button>
       </div>
       <div v-if="state.selectedOptionFrom" class="flex items-center justify-evenly">
-        <img :src="`../../src/assets/flags/${state.selectedOptionFrom.toLowerCase()}.svg`" alt="" class="w-48 h-48">
+        <img @error="imagFallbackFrom" :src="imageFrom" alt="" class="w-48 h-48">
         <img src="../assets/rightarrow.png" alt="" class="w-11 h-11">
-        <img v-if="state.selectedOptionTo" :src="`../../src/assets/flags/${state.selectedOptionTo.toLowerCase()}.svg`" alt="" class="w-48 h-48">
+        <img v-if="state.selectedOptionTo" @error="imagFallbackTo" :src="imageTo" alt="" class="w-48 h-48">
       </div>
       <div class="display-result d-flex justify-content-center text-success">
       </div>
@@ -51,6 +51,8 @@ export default {
       customInputMessage: 'This field is required.',
       customSelectMessage: 'Please choose the currency.',
       showComponent: false,
+      imageTo: null,
+      imageFrom: null,
     };
   },
 
@@ -121,19 +123,50 @@ export default {
         console.error("Error:", error);
       }
     },
+
     convertCurrency(amount, rate) {
       return amount * rate;
     },
+
     updateResultDisplay(amount, currencyFrom, currencyTo, result) {
       const resultDisplay = `${amount} ${currencyFrom.toUpperCase()} equal to ${currencyTo} ${result.toFixed(2)}`;
       document.querySelector(".display-result").innerHTML = resultDisplay;
     },
+
     reverse() {
       const tempOption = this.state.selectedOptionFrom;
       this.state.selectedOptionFrom = this.state.selectedOptionTo;
       this.state.selectedOptionTo = tempOption;
       this.showConvertResult();
       this.showComponent = false;
+    },
+
+    imagFallbackFrom() {
+      this.imageFrom = '../../src/assets/flags/noimg.svg'
+    },
+
+    imagFallbackTo() {
+      this.imageTo = '../../src/assets/flags/noimg.svg'
+    },
+
+    checkImgExist() {
+      return true;
+    },
+  },
+
+  watch: {
+    'state.selectedOptionFrom': function (newOptionFrom) {
+      if (newOptionFrom) {
+        const imagePath = `../../src/assets/flags/${newOptionFrom.toLowerCase()}.svg`;
+        this.imageFrom = this.checkImgExist(imagePath) ? imagePath : null;
+      }
+    },
+
+    'state.selectedOptionTo': function (newOptionTo) {
+      if (newOptionTo) {
+        const imagePath = `../../src/assets/flags/${newOptionTo.toLowerCase()}.svg`;
+        this.imageTo = this.checkImgExist(imagePath) ? imagePath : null;
+      }
     },
   }
 }
