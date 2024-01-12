@@ -9,12 +9,26 @@ export default {
     DarkMode,
     Attribution,
     Converter,
-  }
+  },
+
+  data() {
+    return {
+      isDarkTheme: false,
+    };
+  },
+
+  methods: {
+    onDarkSwitch() {
+      this.isDarkTheme = !this.isDarkTheme;
+    },
+  },
 }
 </script>
 
 <template>
-  <DarkMode />
-  <Converter />
-  <Attribution />
+  <div id="app" :class="{ dark: isDarkTheme }">
+    <DarkMode @dark-switch="onDarkSwitch"/>
+    <Converter/>
+    <Attribution />
+  </div>
 </template>

@@ -1,7 +1,7 @@
 <template>
   <div class="flex flex-col pt-7">
     <VueDatePicker v-model="date" model-type="yyyy-MM-dd"></VueDatePicker>
-    <button @click="lua" class="bg-gold-400 text-white p-3">History</button>
+    <button @click="seeHistory" class="bg-gold-400 text-white p-3 dark:bg-gold-800">History</button>
   </div>
   <div class="display-historical d-flex justify-content-center text-success">
   </div>
@@ -32,7 +32,7 @@ export default {
   },
 
   methods: {
-    async lua() {
+    async seeHistory() {
       try {
         const response = await api.get(`v3/historical?apikey=${this.apiKey}&currencies=${this.selectedOptionTo}&base_currency=${this.selectedOptionFrom}&date=${this.date}`);
         const result = response.data.data[this.selectedOptionTo].value

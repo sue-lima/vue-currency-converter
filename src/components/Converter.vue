@@ -1,30 +1,43 @@
 <template>
   <main class="grow flex flex-col justify-center items-center">
-    <div class=" bg-gold-300 p-12 rounded-xl">
-      <div class="gap-2 flex text-center">
-        <input v-model="state.amountValue" type="number" id="amount" step="0.01" placeholder="$"/>
-        <span v-if="v$.amountValue.$error">{{ customInputMessage }}</span>
-        <select v-model="state.selectedOptionFrom" id="currency-from" required>
-          <option value="" disabled selected hidden>Please Choose</option>
-          <option v-for="(currency, i) in symbol" :key="i" :value="currency.code">
-            {{ currency.code }} - {{ currency.name }}
-          </option>
-        </select>
-        <span v-if="v$.selectedOptionFrom.$error">{{ customSelectMessage }}</span>
-        <img src="../assets/transfer.png" alt="" @click="reverse()" class="w-7 h-7 cursor-pointer">
-        <select v-model="state.selectedOptionTo" id="currency-to" required>
-          <option value="" disabled selected hidden>Please Choose</option>
-          <option v-for="(currency, i) in symbol" :key="i" :value="currency.code">
-            {{ currency.code }} - {{ currency.name }}
-          </option>
-        </select>
-        <span v-if="v$.selectedOptionTo.$error">{{ customSelectMessage }}</span>
-        <button @click="showConvertResult" class="bg-gold-400 text-white font-bold rounded-2xl p-3">Convert</button>
+    <div class="bg-gold-300 p-4 rounded-xl dark:bg-gold-700">
+      <div class="gap-2 flex flex-col text-center">
+        <div class="flex items-center justify-center">
+          <img src="../assets/money.png" alt="" class="w-2/5">
+          <div class="flex flex-col items-center justify-center">
+            <span class="text-4xl p-4 font-bold">Currency converter</span>
+            <span class="w-4/5">Convert any currency in the world by selecting the options below</span>
+            <div class="pt-4 flex flex-col">
+              <input v-model="state.amountValue" type="number" id="amount" step="0.01" placeholder="$ 0,00" class="p-[10px] rounded-xl w-28 text-center"/>
+              <span v-if="v$.amountValue.$error">{{ customInputMessage }}</span>
+            </div>
+          </div>
+        </div>
+        <div class="flex items-center justify-evenly pb-2">
+          <select v-model="state.selectedOptionFrom" id="currency-from" required>
+            <option value="" disabled selected hidden>Please Choose</option>
+            <option v-for="(currency, i) in symbol" :key="i" :value="currency.code">
+              {{ currency.code }} - {{ currency.name }}
+            </option>
+          </select>
+          <span v-if="v$.selectedOptionFrom.$error">{{ customSelectMessage }}</span>
+          <img src="../assets/transfer.png" alt="" @click="reverse()" class="w-7 h-7 cursor-pointer">
+          <select v-model="state.selectedOptionTo" id="currency-to" required>
+            <option value="" disabled selected hidden>Please Choose</option>
+            <option v-for="(currency, i) in symbol" :key="i" :value="currency.code">
+              {{ currency.code }} - {{ currency.name }}
+            </option>
+          </select>
+          <span v-if="v$.selectedOptionTo.$error">{{ customSelectMessage }}</span>
+        </div>
       </div>
       <div v-if="state.selectedOptionFrom" class="flex items-center justify-evenly">
         <img @error="imagFallbackFrom" :src="imageFrom" alt="" class="w-48 h-48">
         <img src="../assets/rightarrow.png" alt="" class="w-11 h-11">
         <img v-if="state.selectedOptionTo" @error="imagFallbackTo" :src="imageTo" alt="" class="w-48 h-48">
+      </div>
+      <div class="flex flex-col items-center justify-center">
+        <button @click="showConvertResult" class="bg-gold-400 dark:bg-gold-800 text-white font-bold w-36 hover:animate-pulse rounded-2xl p-3">Convert</button>
       </div>
       <div class="display-result d-flex justify-content-center text-success">
       </div>
@@ -38,6 +51,7 @@ import { ref, onMounted, reactive, computed } from 'vue'
 import api from '@/services/api'
 import useVuelidate from '@vuelidate/core'
 import { required } from '@vuelidate/validators'
+import Swal from 'sweetalert2'
 import Graph from './Graph.vue'
 
 export default {
@@ -108,7 +122,16 @@ export default {
         const amount = this.state.amountValue;
         const currencyTo = this.state.selectedOptionTo;
         const currencyFrom = this.state.selectedOptionFrom;
-        const rate = response.data.data[currencyTo].value;
+        const rate = response.data.data[currencyTo]?.value;
+
+        if (!rate || !currencyTo || !currencyFrom) {
+          Swal.fire({
+            icon: 'warning',
+            title: 'Oops! Something went wrong.',
+            text: 'Please select all fields before converting',
+          });
+          return;
+        }
 
         this.v$.$validate();
 
@@ -117,7 +140,11 @@ export default {
           this.updateResultDisplay(amount, currencyFrom, currencyTo, result);
           this.showComponent = true;
         } else {
-          alert('Select all fields correctly');
+          Swal.fire({
+            icon: 'error',
+            title: 'Oops! Something went wrong.',
+            text: 'Please select all fields correctly',
+          });
         }
       } catch (error) {
         console.error("Error:", error);
