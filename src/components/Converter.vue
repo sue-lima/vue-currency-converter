@@ -8,27 +8,37 @@
             <span class="text-4xl p-4 font-bold">Currency converter</span>
             <span class="w-4/5">Convert any currency in the world by selecting the options below</span>
             <div class="pt-4 flex flex-col">
-              <input v-model="state.amountValue" type="number" id="amount" step="0.01" placeholder="$ 0,00" class="p-[10px] rounded-xl w-28 text-center"/>
+              <input v-model="state.amountValue" type="number" id="amount" step="0.01" placeholder="$ 0,00" class="p-3 rounded-xl w-28 text-center bg-gold-50 dark:bg-gold-500"/>
               <span v-if="v$.amountValue.$error">{{ customInputMessage }}</span>
             </div>
           </div>
         </div>
         <div class="flex items-center justify-evenly pb-2">
-          <select v-model="state.selectedOptionFrom" id="currency-from" required>
-            <option value="" disabled selected hidden>Please Choose</option>
-            <option v-for="(currency, i) in symbol" :key="i" :value="currency.code">
-              {{ currency.code }} - {{ currency.name }}
-            </option>
-          </select>
-          <span v-if="v$.selectedOptionFrom.$error">{{ customSelectMessage }}</span>
+          <div class="flex flex-col">
+            <input v-model="selectedCurrencyFrom" type="text" :placeholder="inputPlaceholder" @focus="openSelectFrom()" @blur="closeSelectFrom" class="cursor-pointer p-3 rounded-xl w-[332px] bg-gold-50 dark:bg-gold-500" required>
+            <div class="flex flex-col" @mousedown="handleMouseDown">
+              <ul v-if="optionsFrom" class="bg-gold-100 mt-1 h-56 overflow-auto border-2 border-gold-700 rounded-md">
+                <li v-for="(currency, i) in symbol" :key="i" @click="popo(currency)" class="flex items-center gap-2 p-3 cursor-pointer border-solid border-2 border-gold-700 hover:bg-gold-400">
+                  <img :src="`../../src/assets/flags/${currency.code.toLowerCase()}.svg`" alt="" class="w-7">
+                  <p>{{ currency.code }} - {{ currency.name }}</p>
+                </li>
+              </ul>
+              <span v-if="v$.selectedOptionFrom.$error">{{ customSelectMessage }}</span>
+            </div>
+          </div>
           <img src="../assets/transfer.png" alt="" @click="reverse()" class="w-7 h-7 cursor-pointer">
-          <select v-model="state.selectedOptionTo" id="currency-to" required>
-            <option value="" disabled selected hidden>Please Choose</option>
-            <option v-for="(currency, i) in symbol" :key="i" :value="currency.code">
-              {{ currency.code }} - {{ currency.name }}
-            </option>
-          </select>
-          <span v-if="v$.selectedOptionTo.$error">{{ customSelectMessage }}</span>
+          <div class="flex flex-col">
+            <input v-model="selectedCurrencyTo" type="text" :placeholder="inputPlaceholder" @focus="openSelectTo()" @blur="closeSelectTo" class="cursor-pointer p-3 rounded-xl w-[332px] bg-gold-50 dark:bg-gold-500" required>
+            <div class="" @mousedown="handleMouseDown">
+              <ul v-if="optionsTo" class="bg-gold-100 mt-1 h-56 overflow-auto border-2 border-gold-700 rounded-md">
+                <li v-for="(currency, i) in symbol" :key="i" @click="papa(currency)" class="flex items-center gap-2 p-3 cursor-pointer border-solid border-2 border-gold-700 hover:bg-gold-400">
+                  <img :src="`../../src/assets/flags/${currency.code.toLowerCase()}.svg`" alt="" class="w-7">
+                  <p>{{ currency.code }} - {{ currency.name }}</p>
+                </li>
+              </ul>
+              <span v-if="v$.selectedOptionTo.$error">{{ customSelectMessage }}</span>
+            </div>
+          </div>
         </div>
       </div>
       <div v-if="state.selectedOptionFrom" class="flex items-center justify-evenly">
@@ -67,6 +77,11 @@ export default {
       showComponent: false,
       imageTo: null,
       imageFrom: null,
+      optionsTo: false,
+      optionsFrom: false,
+      inputPlaceholder: 'Choose a currency',
+      selectedCurrencyFrom: '',
+      selectedCurrencyTo: ''
     };
   },
 
@@ -124,7 +139,7 @@ export default {
         const currencyFrom = this.state.selectedOptionFrom;
         const rate = response.data.data[currencyTo]?.value;
 
-        if (!rate || !currencyTo || !currencyFrom) {
+        if (!rate && !currencyTo && !currencyFrom) {
           Swal.fire({
             icon: 'warning',
             title: 'Oops! Something went wrong.',
@@ -178,6 +193,50 @@ export default {
 
     checkImgExist() {
       return true;
+    },
+
+    openSelectTo() {
+      this.optionsTo = true;
+      this.inputPlaceholder = 'Taype for search'
+    },
+
+    closeSelectTo(event) {
+      setTimeout(() => {
+        if (!this.$el.contains(event.relatedTarget)) {
+          this.optionsTo = false;
+          this.inputPlaceholder = "Choose a currency";
+        }
+      }, 100);
+    },
+
+    openSelectFrom() {
+      this.optionsFrom = true;
+      this.inputPlaceholder = 'Taype for search'
+    },
+
+    closeSelectFrom(event) {
+      setTimeout(() => {
+        if (!this.$el.contains(event.relatedTarget)) {
+          this.optionsFrom = false;
+          this.inputPlaceholder = "Choose a currency";
+        }
+      }, 100);
+    },
+
+    handleMouseDown(event) {
+      event.stopPropagation();
+    },
+
+    papa(currency) {
+      this.optionsTo = false;
+      this.selectedCurrencyTo = `${currency.code} - ${currency.name}`
+      this.state.selectedOptionTo = `${currency.code}`;
+    },
+
+    popo(currency) {
+      this.optionsFrom = false;
+      this.selectedCurrencyFrom = `${currency.code} - ${currency.name}`
+      this.state.selectedOptionFrom = `${currency.code}`;
     },
   },
 
