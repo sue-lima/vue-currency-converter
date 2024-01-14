@@ -8,17 +8,17 @@
             <span class="text-4xl p-4 font-bold">Currency converter</span>
             <span class="w-4/5">Convert any currency in the world by selecting the options below</span>
             <div class="pt-4 flex flex-col">
-              <input v-model="state.amountValue" type="number" id="amount" step="0.01" placeholder="$ 0,00" class="p-3 rounded-xl w-28 text-center bg-gold-50 dark:bg-gold-500"/>
+              <input v-model="state.amountValue" type="number" id="amount" step="0.01" placeholder="$ 0,00" class="p-3 outline-none rounded-xl w-28 text-center bg-gold-50 dark:bg-gold-500"/>
               <span v-if="v$.amountValue.$error">{{ customInputMessage }}</span>
             </div>
           </div>
         </div>
         <div class="flex items-center justify-evenly pb-2">
           <div class="flex flex-col">
-            <input v-model="selectedCurrencyFrom" type="text" :placeholder="inputPlaceholder" @focus="openSelectFrom()" @blur="closeSelectFrom" class="cursor-pointer p-3 rounded-xl w-[332px] bg-gold-50 dark:bg-gold-500" required>
+            <input v-model="selectedCurrencyFrom" @input="filterOptionsFrom" type="text" :placeholder="inputPlaceholder" @focus="openSelectFrom()" @blur="closeSelectFrom" class="cursor-pointer p-3 outline-none rounded-xl w-[332px] bg-gold-50 dark:bg-gold-500" style="background-image: url('../../src/assets/down-arrow.png'); background-repeat: no-repeat; background-size: 25px; background-position: right 10px top 50%;" required>
             <div class="flex flex-col" @mousedown="handleMouseDown">
-              <ul v-if="optionsFrom" class="bg-gold-100 mt-1 h-56 overflow-auto border-2 border-gold-700 rounded-md">
-                <li v-for="(currency, i) in symbol" :key="i" @click="popo(currency)" class="flex items-center gap-2 p-3 cursor-pointer border-solid border-2 border-gold-700 hover:bg-gold-400">
+              <ul v-if="optionsFrom" class="absolute w-[332px] bg-gold-50 mt-1 h-56 overflow-auto border-2 border-gold-400 dark:border-gold-800 dark:bg-gold-600 rounded-md">
+                <li v-for="(currency, i) in symbol" :key="i" @click="openOptionsFrom(currency)" class="flex items-center gap-2 p-3 cursor-pointer border-solid border-2 border-gold-400  dark:border-gold-800  dark:hover:bg-gold-700 hover:bg-gold-300">
                   <img :src="`../../src/assets/flags/${currency.code.toLowerCase()}.svg`" alt="" class="w-7">
                   <p>{{ currency.code }} - {{ currency.name }}</p>
                 </li>
@@ -26,12 +26,14 @@
               <span v-if="v$.selectedOptionFrom.$error">{{ customSelectMessage }}</span>
             </div>
           </div>
-          <img src="../assets/transfer.png" alt="" @click="reverse()" class="w-7 h-7 cursor-pointer">
+          <div class="flex items-center justify-center cursor-pointer rounded-full w-12 h-12 bg-gold-50 dark:bg-gold-500 dark:hover:bg-gold-400 hover:bg-gold-200" title="Invert currency">
+            <img src="../assets/transfer.png" alt="" @click="reverse()" class="w-7 h-7">
+          </div>
           <div class="flex flex-col">
-            <input v-model="selectedCurrencyTo" type="text" :placeholder="inputPlaceholder" @focus="openSelectTo()" @blur="closeSelectTo" class="cursor-pointer p-3 rounded-xl w-[332px] bg-gold-50 dark:bg-gold-500" required>
-            <div class="" @mousedown="handleMouseDown">
-              <ul v-if="optionsTo" class="bg-gold-100 mt-1 h-56 overflow-auto border-2 border-gold-700 rounded-md">
-                <li v-for="(currency, i) in symbol" :key="i" @click="papa(currency)" class="flex items-center gap-2 p-3 cursor-pointer border-solid border-2 border-gold-700 hover:bg-gold-400">
+            <input v-model="selectedCurrencyTo" @input="filterOptionsTo" type="text" :placeholder="inputPlaceholder" @focus="openSelectTo()" @blur="closeSelectTo" class="cursor-pointer p-3 outline-none rounded-xl w-[332px] bg-gold-50 dark:bg-gold-500" style="background-image: url('../../src/assets/down-arrow.png'); background-repeat: no-repeat; background-size: 25px; background-position: right 10px top 50%;" required>
+            <div class="flex flex-col" @mousedown="handleMouseDown">
+              <ul v-if="optionsTo" class="absolute w-[332px] bg-gold-50 mt-1 h-56 overflow-auto border-2 border-gold-400 dark:border-gold-800 dark:bg-gold-600 rounded-md">
+                <li v-for="(currency, i) in symbol" :key="i" @click="openOptionsTo(currency)" class="flex items-center gap-2 p-3 cursor-pointer border-solid border-2 border-gold-400  dark:border-gold-800  dark:hover:bg-gold-700 hover:bg-gold-300">
                   <img :src="`../../src/assets/flags/${currency.code.toLowerCase()}.svg`" alt="" class="w-7">
                   <p>{{ currency.code }} - {{ currency.name }}</p>
                 </li>
@@ -197,7 +199,8 @@ export default {
 
     openSelectTo() {
       this.optionsTo = true;
-      this.inputPlaceholder = 'Taype for search'
+      this.inputPlaceholder = 'Type for search'
+      this.optionsFrom = false;
     },
 
     closeSelectTo(event) {
@@ -211,7 +214,8 @@ export default {
 
     openSelectFrom() {
       this.optionsFrom = true;
-      this.inputPlaceholder = 'Taype for search'
+      this.inputPlaceholder = 'Type for search'
+      this.optionsTo = false;
     },
 
     closeSelectFrom(event) {
@@ -227,16 +231,40 @@ export default {
       event.stopPropagation();
     },
 
-    papa(currency) {
+    openOptionsTo(currency) {
       this.optionsTo = false;
       this.selectedCurrencyTo = `${currency.code} - ${currency.name}`
       this.state.selectedOptionTo = `${currency.code}`;
     },
 
-    popo(currency) {
+    openOptionsFrom(currency) {
       this.optionsFrom = false;
       this.selectedCurrencyFrom = `${currency.code} - ${currency.name}`
       this.state.selectedOptionFrom = `${currency.code}`;
+    },
+
+    filterOptionsFrom() {
+      let dropdown_items = document.getElementsByTagName("li");
+      if (!dropdown_items)
+        return false;
+      for (let i = 0; i < dropdown_items.length; i++) {
+        if (dropdown_items[i].innerHTML.toUpperCase().includes(this.selectedCurrencyFrom.toUpperCase()))
+          dropdown_items[i].style.display = 'flex';
+        else
+          dropdown_items[i].style.display = 'none';
+      }
+    },
+
+    filterOptionsTo() {
+      let dropdown_items = document.getElementsByTagName("li");
+      if (!dropdown_items)
+        return false;
+      for (let i = 0; i < dropdown_items.length; i++) {
+        if (dropdown_items[i].innerHTML.toUpperCase().includes(this.selectedCurrencyTo.toUpperCase()))
+          dropdown_items[i].style.display = 'flex';
+        else
+          dropdown_items[i].style.display = 'none';
+      }
     },
   },
 
