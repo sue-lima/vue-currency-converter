@@ -3,7 +3,7 @@
     <div>
       <p class="text-xl font-bold">View history by date</p>
       <div class="flex justify-center items-center gap-1.5">
-        <VueDatePicker v-model="date" model-type="dd/MM/yyyy" :enable-time-picker="false" placeholder="Select Date" class="dark:bg-gold-500"></VueDatePicker>
+        <VueDatePicker v-model="date" model-type="yyyy-MM-dd" :enable-time-picker="false" placeholder="Select Date" class="dark:bg-gold-500"></VueDatePicker>
         <button @click="viewHistory" class="bg-gold-400 text-white font-bold rounded-2xl p-3 dark:bg-gold-800 hover:animate-pulse">History</button>
       </div>
     </div>
