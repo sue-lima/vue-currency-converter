@@ -17,12 +17,12 @@
           <div class="flex flex-col">
             <input v-model="selectedCurrencyFrom" @input="filterOptionsFrom" type="text" :placeholder="inputPlaceholderFrom" @focus="openSelectFrom()" @blur="closeSelectFrom" class="cursor-pointer p-3 outline-none rounded-xl w-[332px] bg-gold-50 dark:bg-gold-500" style="background-image: url('../../src/assets/down-arrow.png'); background-repeat: no-repeat; background-size: 25px; background-position: right 10px top 50%;" required>
             <div class="flex flex-col" style="z-index: 2;" @mousedown="handleMouseDown">
-              <ul v-if="optionsFrom" class="absolute bg-gold-50 mt-1 h-56 overflow-auto rounded-md">
-                <li v-for="(currency, i) in symbol" :key="i" @click="openOptionsFrom(currency)" class="flex w-[324px] items-center gap-2 p-3 cursor-pointer border-2 border-gold-400  dark:border-gold-800  dark:hover:bg-gold-700 hover:bg-gold-300">
+              <div v-if="optionsFrom" class="absolute bg-gold-50 mt-1 h-56 overflow-auto border-2 border-gold-400 dark:border-gold-800 dark:bg-gold-600 rounded-md">
+                <div v-for="(currency, i) in symbol" :key="i" @click="openOptionsFrom(currency)" class="flex items-center gap-2 p-3 cursor-pointer border-solid border-2 border-gold-400  dark:border-gold-800  dark:hover:bg-gold-700 hover:bg-gold-300">
                   <img :src="`../../src/assets/flags/${currency.code.toLowerCase()}.svg`" alt="" class="w-7">
                   <p>{{ currency.code }} - {{ currency.name }}</p>
-                </li>
-              </ul>
+                </div>
+              </div>
               <span v-if="v$.selectedOptionFrom.$error">{{ customSelectMessage }}</span>
             </div>
           </div>
@@ -32,12 +32,12 @@
           <div class="flex flex-col">
             <input v-model="selectedCurrencyTo" @input="filterOptionsTo" type="text" :placeholder="inputPlaceholderTo" @focus="openSelectTo()" @blur="closeSelectTo" class="cursor-pointer p-3 outline-none rounded-xl w-[332px] bg-gold-50 dark:bg-gold-500" style="background-image: url('../../src/assets/down-arrow.png'); background-repeat: no-repeat; background-size: 25px; background-position: right 10px top 50%;" required>
             <div class="flex flex-col" style="z-index: 2;" @mousedown="handleMouseDown">
-              <ul v-if="optionsTo" class="absolute bg-gold-50 mt-1 h-56 overflow-auto rounded-md">
-                <li v-for="(currency, i) in symbol" :key="i" @click="openOptionsTo(currency)" class="flex w-[324px] items-center gap-2 p-3 cursor-pointer border-2 border-gold-400  dark:border-gold-800  dark:hover:bg-gold-700 hover:bg-gold-300">
+              <div v-if="optionsTo" class="absolute bg-gold-50 mt-1 h-56 overflow-auto border-2 border-gold-400 dark:border-gold-800 dark:bg-gold-600 rounded-md">
+                <div v-for="(currency, i) in symbol" :key="i" @click="openOptionsTo(currency)" class="flex items-center gap-2 p-3 cursor-pointer border-solid border-2 border-gold-400  dark:border-gold-800  dark:hover:bg-gold-700 hover:bg-gold-300">
                   <img :src="`../../src/assets/flags/${currency.code.toLowerCase()}.svg`" alt="" class="w-7">
                   <p>{{ currency.code }} - {{ currency.name }}</p>
-                </li>
-              </ul>
+                </div>
+              </div>
               <span v-if="v$.selectedOptionTo.$error">{{ customSelectMessage }}</span>
             </div>
           </div>
@@ -295,11 +295,23 @@ export default {
   background-color: #EADBC8;
 }
 
+.dark ::-webkit-scrollbar-track {
+  background-color: #756e64;
+}
+
 ::-webkit-scrollbar-thumb {
   background-color: #46423c;
 }
 
+.dark ::-webkit-scrollbar-thumb {
+  background-color: #2f2c28;
+}
+
 ::-webkit-scrollbar-thumb:hover {
   background-color: #5e5850;
+}
+
+.dark ::-webkit-scrollbar-thumb:hover {
+  background-color: #AE9A82;
 }
 </style>
