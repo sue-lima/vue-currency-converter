@@ -1,6 +1,6 @@
 <template>
   <div class="grid grid-cols-2 justify-items-center items-center pt-7">
-    <div>
+    <div class="animate__animated animate__slideInDown">
       <p class="text-xl font-bold">View history by date</p>
       <div class="flex justify-center items-center gap-1.5">
         <VueDatePicker v-model="date" model-type="yyyy-MM-dd" :enable-time-picker="false" placeholder="Select Date" class="dark:bg-gold-500"></VueDatePicker>

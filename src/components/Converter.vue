@@ -1,6 +1,6 @@
 <template>
   <main class="grow flex flex-col justify-center items-center">
-    <div class="bg-gold-300 p-4 rounded-xl dark:bg-gold-700">
+    <div class="bg-gold-300 p-4 rounded-xl dark:bg-gold-700 animate__animated animate__zoomIn">
       <div class="gap-2 flex flex-col text-center">
         <div class="flex items-center justify-center">
           <img src="../assets/money.png" alt="" class="w-2/5">
@@ -15,10 +15,10 @@
         </div>
         <div class="flex items-center justify-evenly pb-2">
           <div class="flex flex-col">
-            <input v-model="selectedCurrencyFrom" @input="filterOptionsFrom" type="text" :placeholder="inputPlaceholder" @focus="openSelectFrom()" @blur="closeSelectFrom" class="cursor-pointer p-3 outline-none rounded-xl w-[332px] bg-gold-50 dark:bg-gold-500" style="background-image: url('../../src/assets/down-arrow.png'); background-repeat: no-repeat; background-size: 25px; background-position: right 10px top 50%;" required>
-            <div class="flex flex-col" @mousedown="handleMouseDown">
-              <ul v-if="optionsFrom" class="absolute w-[332px] bg-gold-50 mt-1 h-56 overflow-auto border-2 border-gold-400 dark:border-gold-800 dark:bg-gold-600 rounded-md">
-                <li v-for="(currency, i) in symbol" :key="i" @click="openOptionsFrom(currency)" class="flex items-center gap-2 p-3 cursor-pointer border-solid border-2 border-gold-400  dark:border-gold-800  dark:hover:bg-gold-700 hover:bg-gold-300">
+            <input v-model="selectedCurrencyFrom" @input="filterOptionsFrom" type="text" :placeholder="inputPlaceholderFrom" @focus="openSelectFrom()" @blur="closeSelectFrom" class="cursor-pointer p-3 outline-none rounded-xl w-[332px] bg-gold-50 dark:bg-gold-500" style="background-image: url('../../src/assets/down-arrow.png'); background-repeat: no-repeat; background-size: 25px; background-position: right 10px top 50%;" required>
+            <div class="flex flex-col" style="z-index: 2;" @mousedown="handleMouseDown">
+              <ul v-if="optionsFrom" class="absolute bg-gold-50 mt-1 h-56 overflow-auto rounded-md">
+                <li v-for="(currency, i) in symbol" :key="i" @click="openOptionsFrom(currency)" class="flex w-[324px] items-center gap-2 p-3 cursor-pointer border-2 border-gold-400  dark:border-gold-800  dark:hover:bg-gold-700 hover:bg-gold-300">
                   <img :src="`../../src/assets/flags/${currency.code.toLowerCase()}.svg`" alt="" class="w-7">
                   <p>{{ currency.code }} - {{ currency.name }}</p>
                 </li>
@@ -30,10 +30,10 @@
             <img src="../assets/transfer.png" alt="" @click="reverse()" class="w-7 h-7">
           </div>
           <div class="flex flex-col">
-            <input v-model="selectedCurrencyTo" @input="filterOptionsTo" type="text" :placeholder="inputPlaceholder" @focus="openSelectTo()" @blur="closeSelectTo" class="cursor-pointer p-3 outline-none rounded-xl w-[332px] bg-gold-50 dark:bg-gold-500" style="background-image: url('../../src/assets/down-arrow.png'); background-repeat: no-repeat; background-size: 25px; background-position: right 10px top 50%;" required>
-            <div class="flex flex-col" @mousedown="handleMouseDown">
-              <ul v-if="optionsTo" class="absolute w-[332px] bg-gold-50 mt-1 h-56 overflow-auto border-2 border-gold-400 dark:border-gold-800 dark:bg-gold-600 rounded-md">
-                <li v-for="(currency, i) in symbol" :key="i" @click="openOptionsTo(currency)" class="flex items-center gap-2 p-3 cursor-pointer border-solid border-2 border-gold-400  dark:border-gold-800  dark:hover:bg-gold-700 hover:bg-gold-300">
+            <input v-model="selectedCurrencyTo" @input="filterOptionsTo" type="text" :placeholder="inputPlaceholderTo" @focus="openSelectTo()" @blur="closeSelectTo" class="cursor-pointer p-3 outline-none rounded-xl w-[332px] bg-gold-50 dark:bg-gold-500" style="background-image: url('../../src/assets/down-arrow.png'); background-repeat: no-repeat; background-size: 25px; background-position: right 10px top 50%;" required>
+            <div class="flex flex-col" style="z-index: 2;" @mousedown="handleMouseDown">
+              <ul v-if="optionsTo" class="absolute bg-gold-50 mt-1 h-56 overflow-auto rounded-md">
+                <li v-for="(currency, i) in symbol" :key="i" @click="openOptionsTo(currency)" class="flex w-[324px] items-center gap-2 p-3 cursor-pointer border-2 border-gold-400  dark:border-gold-800  dark:hover:bg-gold-700 hover:bg-gold-300">
                   <img :src="`../../src/assets/flags/${currency.code.toLowerCase()}.svg`" alt="" class="w-7">
                   <p>{{ currency.code }} - {{ currency.name }}</p>
                 </li>
@@ -43,9 +43,9 @@
           </div>
         </div>
         <div v-if="state.selectedOptionFrom" class="flex items-center justify-evenly">
-          <img @error="imagFallbackFrom" :src="imageFrom" alt="" class="w-48 h-48">
+          <img @error="imagFallbackFrom" :src="imageFrom" alt=""  class="w-48 h-48 animate__animated animate__fadeInDown">
           <img src="../assets/rightarrow.png" alt="" class="w-11 h-11">
-          <img v-if="state.selectedOptionTo" @error="imagFallbackTo" :src="imageTo" alt="" class="w-48 h-48">
+          <img v-if="state.selectedOptionTo" @error="imagFallbackTo" :src="imageTo" alt="" class="w-48 h-48 animate__animated animate__fadeInDown">
         </div>
         <div class="flex flex-col items-center justify-center">
           <button @click="showConvertResult" class="bg-gold-400 dark:bg-gold-800 text-white font-bold w-40 hover:animate-pulse rounded-2xl p-3">Convert</button>
@@ -80,7 +80,8 @@ export default {
       imageFrom: null,
       optionsTo: false,
       optionsFrom: false,
-      inputPlaceholder: 'Choose a currency',
+      inputPlaceholderFrom: 'Choose a currency',
+      inputPlaceholderTo: 'Choose a currency',
       selectedCurrencyFrom: '',
       selectedCurrencyTo: ''
     };
@@ -173,7 +174,7 @@ export default {
 
     updateResultDisplay(amount, currencyFrom, currencyTo, result) {
       const resultDisplay = `${amount} ${currencyFrom} is equal to ${result.toFixed(2)} ${currencyTo}`;
-      document.querySelector(".display-result").innerHTML = resultDisplay;
+      document.querySelector(".display-result").innerText = resultDisplay;
     },
 
     reverse() {
@@ -198,7 +199,7 @@ export default {
 
     openSelectTo() {
       this.optionsTo = true;
-      this.inputPlaceholder = 'Type for search'
+      this.inputPlaceholderTo = 'Type for search'
       this.optionsFrom = false;
     },
 
@@ -206,14 +207,14 @@ export default {
       setTimeout(() => {
         if (!this.$el.contains(event.relatedTarget)) {
           this.optionsTo = false;
-          this.inputPlaceholder = "Choose a currency";
+          this.inputPlaceholderTo = "Choose a currency";
         }
       }, 100);
     },
 
     openSelectFrom() {
       this.optionsFrom = true;
-      this.inputPlaceholder = 'Type for search'
+      this.inputPlaceholderFrom = 'Type for search'
       this.optionsTo = false;
     },
 
@@ -221,7 +222,7 @@ export default {
       setTimeout(() => {
         if (!this.$el.contains(event.relatedTarget)) {
           this.optionsFrom = false;
-          this.inputPlaceholder = "Choose a currency";
+          this.inputPlaceholderFrom = "Choose a currency";
         }
       }, 100);
     },
@@ -284,3 +285,21 @@ export default {
   }
 }
 </script>
+
+<style>
+::-webkit-scrollbar {
+  width: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background-color: #EADBC8;
+}
+
+::-webkit-scrollbar-thumb {
+  background-color: #46423c;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background-color: #5e5850;
+}
+</style>
