@@ -7,7 +7,7 @@
 #app {
   display: flex;
   flex-flow: column;
-  height: 100vh;
+  min-height: 100vh;
   background-color: #eadbc8;
   font-family: 'Akshar', sans-serif;
   font-size: 16px;

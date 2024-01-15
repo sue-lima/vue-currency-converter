@@ -1,9 +1,13 @@
 <template>
-  <div class="flex flex-col pt-7">
-    <VueDatePicker v-model="date" model-type="yyyy-MM-dd"></VueDatePicker>
-    <button @click="seeHistory" class="bg-gold-400 text-white p-3 dark:bg-gold-800">History</button>
-  </div>
-  <div class="display-historical d-flex justify-content-center text-success">
+  <div class="grid grid-cols-2 justify-items-center items-center pt-7">
+    <div>
+      <p class="text-xl font-bold">View history by date</p>
+      <div class="flex justify-center items-center gap-1.5">
+        <VueDatePicker v-model="date" model-type="dd/MM/yyyy" :enable-time-picker="false" placeholder="Select Date" class="dark:bg-gold-500"></VueDatePicker>
+        <button @click="viewHistory" class="bg-gold-400 text-white font-bold rounded-2xl p-3 dark:bg-gold-800 hover:animate-pulse">History</button>
+      </div>
+    </div>
+    <div class="display-historical text-lg italic font-medium w-52 text-center text-gold-700 dark:text-gold-50"></div>
   </div>
 </template>
 
@@ -11,6 +15,7 @@
 import VueDatePicker from '@vuepic/vue-datepicker';
 import '@vuepic/vue-datepicker/dist/main.css'
 import api from '@/services/api'
+import Swal from 'sweetalert2'
 
 export default {
   name: 'GraphConverter',
@@ -32,7 +37,15 @@ export default {
   },
 
   methods: {
-    async seeHistory() {
+    async viewHistory() {
+      if (!this.date) {
+        Swal.fire({
+          icon: 'error',
+          title: 'Oops! Something went wrong.',
+          text: 'Please select a date',
+        });
+      }
+
       try {
         const response = await api.get(`v3/historical?apikey=${this.apiKey}&currencies=${this.selectedOptionTo}&base_currency=${this.selectedOptionFrom}&date=${this.date}`);
         const result = response.data.data[this.selectedOptionTo].value
@@ -42,7 +55,7 @@ export default {
       }
     },
     updateHistoricalResult(result) {
-      const resultDisplay = `On ${this.date} ${this.selectedOptionFrom} was equal to ${result.toFixed(2)} ${this.selectedOptionTo}`;
+      const resultDisplay = `On ${this.date} 1 ${this.selectedOptionFrom} was equal to ${result.toFixed(2)} ${this.selectedOptionTo}`;
       document.querySelector(".display-historical").innerHTML = resultDisplay;
     },
   }

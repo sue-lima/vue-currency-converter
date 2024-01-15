@@ -42,17 +42,16 @@
             </div>
           </div>
         </div>
+        <div v-if="state.selectedOptionFrom" class="flex items-center justify-evenly">
+          <img @error="imagFallbackFrom" :src="imageFrom" alt="" class="w-48 h-48">
+          <img src="../assets/rightarrow.png" alt="" class="w-11 h-11">
+          <img v-if="state.selectedOptionTo" @error="imagFallbackTo" :src="imageTo" alt="" class="w-48 h-48">
+        </div>
+        <div class="flex flex-col items-center justify-center">
+          <button @click="showConvertResult" class="bg-gold-400 dark:bg-gold-800 text-white font-bold w-40 hover:animate-pulse rounded-2xl p-3">Convert</button>
+        </div>
       </div>
-      <div v-if="state.selectedOptionFrom" class="flex items-center justify-evenly">
-        <img @error="imagFallbackFrom" :src="imageFrom" alt="" class="w-48 h-48">
-        <img src="../assets/rightarrow.png" alt="" class="w-11 h-11">
-        <img v-if="state.selectedOptionTo" @error="imagFallbackTo" :src="imageTo" alt="" class="w-48 h-48">
-      </div>
-      <div class="flex flex-col items-center justify-center">
-        <button @click="showConvertResult" class="bg-gold-400 dark:bg-gold-800 text-white font-bold w-36 hover:animate-pulse rounded-2xl p-3">Convert</button>
-      </div>
-      <div class="display-result d-flex justify-content-center text-success">
-      </div>
+      <div class="display-result flex flex-col items-center justify-center pt-4 text-2xl dark:text-gold-50 text-gold-700 font-medium"></div>
       <Graph v-if="showComponent" :selectedOptionFrom="state.selectedOptionFrom" :selectedOptionTo="state.selectedOptionTo"/>
     </div>
   </main>
@@ -173,7 +172,7 @@ export default {
     },
 
     updateResultDisplay(amount, currencyFrom, currencyTo, result) {
-      const resultDisplay = `${amount} ${currencyFrom.toUpperCase()} equal to ${currencyTo} ${result.toFixed(2)}`;
+      const resultDisplay = `${amount} ${currencyFrom} is equal to ${result.toFixed(2)} ${currencyTo}`;
       document.querySelector(".display-result").innerHTML = resultDisplay;
     },
 
