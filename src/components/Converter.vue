@@ -19,7 +19,7 @@
             <div class="flex flex-col" style="z-index: 2;" @mousedown="handleMouseDown">
               <div v-if="optionsFrom" class="absolute bg-gold-50 mt-1 min-w-[332px] h-56 overflow-auto border-2 border-gold-400 dark:border-gold-800 dark:bg-gold-600 rounded-md">
                 <div v-for="(currency, i) in symbol" :key="i" @click="openOptionsFrom(currency)" class="current-from flex items-center gap-2 p-3 cursor-pointer border-solid border-2 border-gold-400  dark:border-gold-800  dark:hover:bg-gold-700 hover:bg-gold-300">
-                  <img :src="`../../src/assets/flags/${currency.code.toLowerCase()}.svg`" alt="" class="w-7 h-7">
+                  <img :src="`../../src/assets/${currency.code.toLowerCase()}.svg`" alt="" class="w-7 h-7">
                   <p>{{ currency.code }} - {{ currency.name }}</p>
                 </div>
               </div>
@@ -34,7 +34,7 @@
             <div class="flex flex-col" style="z-index: 2;" @mousedown="handleMouseDown">
               <div v-if="optionsTo" class="absolute bg-gold-50 mt-1 min-w-[332px] h-56 overflow-auto border-2 border-gold-400 dark:border-gold-800 dark:bg-gold-600 rounded-md">
                 <div v-for="(currency, i) in symbol" :key="i" @click="openOptionsTo(currency)" class="current-to flex items-center gap-2 p-3 cursor-pointer border-solid border-2 border-gold-400  dark:border-gold-800  dark:hover:bg-gold-700 hover:bg-gold-300">
-                  <img :src="`../../src/assets/flags/${currency.code.toLowerCase()}.svg`" alt="" class="w-7 h-7">
+                  <img :src="`../../src/assets/${currency.code.toLowerCase()}.svg`" alt="" class="w-7 h-7">
                   <p>{{ currency.code }} - {{ currency.name }}</p>
                 </div>
               </div>
@@ -190,11 +190,11 @@ export default {
     },
 
     imagFallbackFrom() {
-      this.imageFrom = '../../src/assets/flags/noimg.svg'
+      this.imageFrom = '../../src/assets/noimg.svg'
     },
 
     imagFallbackTo() {
-      this.imageTo = '../../src/assets/flags/noimg.svg'
+      this.imageTo = '../../src/assets/noimg.svg'
     },
 
     checkImgExist() {
@@ -275,14 +275,14 @@ export default {
   watch: {
     'state.selectedOptionFrom': function (newOptionFrom) {
       if (newOptionFrom) {
-        const imagePath = `../../src/assets/flags/${newOptionFrom.toLowerCase()}.svg`;
+        const imagePath = `../../src/assets/${newOptionFrom.toLowerCase()}.svg`;
         this.imageFrom = this.checkImgExist(imagePath) ? imagePath : null;
       }
     },
 
     'state.selectedOptionTo': function (newOptionTo) {
       if (newOptionTo) {
-        const imagePath = `../../src/assets/flags/${newOptionTo.toLowerCase()}.svg`;
+        const imagePath = `../../src/assets/${newOptionTo.toLowerCase()}.svg`;
         this.imageTo = this.checkImgExist(imagePath) ? imagePath : null;
       }
     },
