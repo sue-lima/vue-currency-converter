@@ -15,11 +15,11 @@
         </div>
         <div class="flex items-center flex-col gap-2 justify-evenly pb-2 lg:flex-row">
           <div class="flex flex-col">
-            <input v-model="selectedCurrencyFrom" @input="filterOptionsFrom" type="text" :placeholder="inputPlaceholderFrom" @focus="openSelectFrom()" @blur="closeSelectFrom" class="cursor-pointer p-3 outline-none rounded-xl w-[332px] bg-gold-50 dark:bg-gold-500" style="background-image: url('../../src/assets/down-arrow.png'); background-repeat: no-repeat; background-size: 25px; background-position: right 10px top 50%;" required>
+            <input v-model="selectedCurrencyFrom" @input="filterOptionsFrom" type="text" :placeholder="inputPlaceholderFrom" @focus="openSelectFrom()" @blur="closeSelectFrom" class="arrow cursor-pointer p-3 outline-none rounded-xl w-[332px] bg-gold-50 dark:bg-gold-500" required>
             <div class="flex flex-col" style="z-index: 2;" @mousedown="handleMouseDown">
               <div v-if="optionsFrom" class="absolute bg-gold-50 mt-1 min-w-[332px] h-56 overflow-auto border-2 border-gold-400 dark:border-gold-800 dark:bg-gold-600 rounded-md">
                 <div v-for="(currency, i) in symbol" :key="i" @click="openOptionsFrom(currency)" class="current-from flex items-center gap-2 p-3 cursor-pointer border-solid border-2 border-gold-400  dark:border-gold-800  dark:hover:bg-gold-700 hover:bg-gold-300">
-                  <img :src="`../../src/assets/flags/${currency.code.toLowerCase()}.svg`" alt="" class="w-7 h-7">
+                  <img :src="imageSrc(currency)" alt="" class="w-7 h-7">
                   <p>{{ currency.code }} - {{ currency.name }}</p>
                 </div>
               </div>
@@ -30,11 +30,11 @@
             <img src="../assets/transfer.png" alt="" @click="reverse()" class="w-7 h-7">
           </div>
           <div class="flex flex-col">
-            <input v-model="selectedCurrencyTo" @input="filterOptionsTo" type="text" :placeholder="inputPlaceholderTo" @focus="openSelectTo()" @blur="closeSelectTo" class="cursor-pointer p-3 outline-none rounded-xl w-[332px] bg-gold-50 dark:bg-gold-500" style="background-image: url('../../src/assets/down-arrow.png'); background-repeat: no-repeat; background-size: 25px; background-position: right 10px top 50%;" required>
+            <input v-model="selectedCurrencyTo" @input="filterOptionsTo" type="text" :placeholder="inputPlaceholderTo" @focus="openSelectTo()" @blur="closeSelectTo" class="arrow cursor-pointer p-3 outline-none rounded-xl w-[332px] bg-gold-50 dark:bg-gold-500 bg-arrow-down" required>
             <div class="flex flex-col" style="z-index: 2;" @mousedown="handleMouseDown">
               <div v-if="optionsTo" class="absolute bg-gold-50 mt-1 min-w-[332px] h-56 overflow-auto border-2 border-gold-400 dark:border-gold-800 dark:bg-gold-600 rounded-md">
                 <div v-for="(currency, i) in symbol" :key="i" @click="openOptionsTo(currency)" class="current-to flex items-center gap-2 p-3 cursor-pointer border-solid border-2 border-gold-400  dark:border-gold-800  dark:hover:bg-gold-700 hover:bg-gold-300">
-                  <img :src="`../../src/assets/flags/${currency.code.toLowerCase()}.svg`" alt="" class="w-7 h-7">
+                  <img :src="imageSrc(currency)" alt="" class="w-7 h-7">
                   <p>{{ currency.code }} - {{ currency.name }}</p>
                 </div>
               </div>
@@ -190,11 +190,11 @@ export default {
     },
 
     imagFallbackFrom() {
-      this.imageFrom = '../../src/assets/flags/noimg.svg'
+      this.imageFrom = new URL(`/src/assets/flags/noimg.svg`, import.meta.url).href
     },
 
     imagFallbackTo() {
-      this.imageTo = '../../src/assets/flags/noimg.svg'
+      this.imageTo = new URL(`/src/assets/flags/noimg.svg`, import.meta.url).href
     },
 
     checkImgExist() {
@@ -270,19 +270,23 @@ export default {
           dropdown_items[i].style.display = 'none';
       }
     },
+
+    imageSrc(image) {
+      return new URL(`/src/assets/flags/${image.code.toLowerCase()}.svg`, import.meta.url).href
+    },
   },
 
   watch: {
     'state.selectedOptionFrom': function (newOptionFrom) {
       if (newOptionFrom) {
-        const imagePath = `../../src/assets/flags/${newOptionFrom.toLowerCase()}.svg`;
+        const imagePath = new URL(`/src/assets/flags/${newOptionFrom.toLowerCase()}.svg`, import.meta.url).href;
         this.imageFrom = this.checkImgExist(imagePath) ? imagePath : null;
       }
     },
 
     'state.selectedOptionTo': function (newOptionTo) {
       if (newOptionTo) {
-        const imagePath = `../../src/assets/flags/${newOptionTo.toLowerCase()}.svg`;
+        const imagePath = new URL(`/src/assets/flags/${newOptionTo.toLowerCase()}.svg`, import.meta.url).href;
         this.imageTo = this.checkImgExist(imagePath) ? imagePath : null;
       }
     },
@@ -291,6 +295,13 @@ export default {
 </script>
 
 <style>
+.arrow {
+  background-image: url('../assets/down-arrow.png'); 
+  background-repeat: no-repeat; 
+  background-size: 25px; 
+  background-position: right 10px top 50%;
+}
+
 ::-webkit-scrollbar {
   width: 8px;
 }
