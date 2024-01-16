@@ -1,9 +1,9 @@
 <template>
-  <div class="grid grid-cols-2 justify-items-center items-center pt-7">
+  <div class="flex flex-col justify-items-center items-center pt-7 md:grid md:grid-cols-2">
     <div class="animate__animated animate__slideInDown">
       <p class="text-xl font-bold">View history by date</p>
       <div class="flex justify-center items-center gap-1.5">
-        <VueDatePicker v-model="date" model-type="yyyy-MM-dd" :enable-time-picker="false" placeholder="Select Date" class="dark:bg-gold-500"></VueDatePicker>
+        <VueDatePicker v-model="date" model-type="yyyy-MM-dd" :class="{ 'custom-datepicker': true }" :enable-time-picker="false" placeholder="Select Date"></VueDatePicker>
         <button @click="viewHistory" class="bg-gold-400 text-white font-bold rounded-2xl p-3 dark:bg-gold-800 hover:animate-pulse">History</button>
       </div>
     </div>
@@ -18,7 +18,7 @@ import api from '@/services/api'
 import Swal from 'sweetalert2'
 
 export default {
-  name: 'GraphConverter',
+  name: 'HistoryOfConverter',
   components: { VueDatePicker },
   props: {
     selectedOptionFrom: String,
@@ -52,6 +52,10 @@ export default {
         this.updateHistoricalResult(result)
       } catch (error) {
         console.error("Error:", error);
+        Swal.fire({
+          icon: 'error',
+          title: 'Oops! Something went wrong.',
+        });
       }
     },
     updateHistoricalResult(result) {
@@ -61,3 +65,16 @@ export default {
   }
 }
 </script>
+
+<style>
+.dp__input  {
+  background-color: #F2E9DE;
+  border-radius: 12px;
+  outline: none;
+  border: none;
+}
+
+.dark .dp__input  {
+  background-color: #756e64;
+}
+</style>

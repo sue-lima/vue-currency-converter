@@ -1,8 +1,8 @@
 <template>
   <main class="grow flex flex-col justify-center items-center">
-    <div class="bg-gold-300 p-4 rounded-xl dark:bg-gold-700 animate__animated animate__zoomIn">
+    <div class="bg-gold-300 p-4 rounded-xl dark:bg-gold-700 w-96 animate__animated animate__zoomIn sm:w-[650px] lg:w-auto">
       <div class="gap-2 flex flex-col text-center">
-        <div class="flex items-center justify-center">
+        <div class="flex flex-col items-center justify-center md:flex-row">
           <img src="../assets/money.png" alt="" class="w-2/5">
           <div class="flex flex-col items-center justify-center">
             <span class="text-4xl p-4 font-bold">Currency converter</span>
@@ -13,13 +13,13 @@
             </div>
           </div>
         </div>
-        <div class="flex items-center justify-evenly pb-2">
+        <div class="flex items-center flex-col gap-2 justify-evenly pb-2 lg:flex-row">
           <div class="flex flex-col">
             <input v-model="selectedCurrencyFrom" @input="filterOptionsFrom" type="text" :placeholder="inputPlaceholderFrom" @focus="openSelectFrom()" @blur="closeSelectFrom" class="cursor-pointer p-3 outline-none rounded-xl w-[332px] bg-gold-50 dark:bg-gold-500" style="background-image: url('../../src/assets/down-arrow.png'); background-repeat: no-repeat; background-size: 25px; background-position: right 10px top 50%;" required>
             <div class="flex flex-col" style="z-index: 2;" @mousedown="handleMouseDown">
-              <div v-if="optionsFrom" class="absolute bg-gold-50 mt-1 h-56 overflow-auto border-2 border-gold-400 dark:border-gold-800 dark:bg-gold-600 rounded-md">
-                <div v-for="(currency, i) in symbol" :key="i" @click="openOptionsFrom(currency)" class="flex items-center gap-2 p-3 cursor-pointer border-solid border-2 border-gold-400  dark:border-gold-800  dark:hover:bg-gold-700 hover:bg-gold-300">
-                  <img :src="`../../src/assets/flags/${currency.code.toLowerCase()}.svg`" alt="" class="w-7">
+              <div v-if="optionsFrom" class="absolute bg-gold-50 mt-1 min-w-[332px] h-56 overflow-auto border-2 border-gold-400 dark:border-gold-800 dark:bg-gold-600 rounded-md">
+                <div v-for="(currency, i) in symbol" :key="i" @click="openOptionsFrom(currency)" class="current-from flex items-center gap-2 p-3 cursor-pointer border-solid border-2 border-gold-400  dark:border-gold-800  dark:hover:bg-gold-700 hover:bg-gold-300">
+                  <img :src="`../../src/assets/flags/${currency.code.toLowerCase()}.svg`" alt="" class="w-7 h-7">
                   <p>{{ currency.code }} - {{ currency.name }}</p>
                 </div>
               </div>
@@ -32,9 +32,9 @@
           <div class="flex flex-col">
             <input v-model="selectedCurrencyTo" @input="filterOptionsTo" type="text" :placeholder="inputPlaceholderTo" @focus="openSelectTo()" @blur="closeSelectTo" class="cursor-pointer p-3 outline-none rounded-xl w-[332px] bg-gold-50 dark:bg-gold-500" style="background-image: url('../../src/assets/down-arrow.png'); background-repeat: no-repeat; background-size: 25px; background-position: right 10px top 50%;" required>
             <div class="flex flex-col" style="z-index: 2;" @mousedown="handleMouseDown">
-              <div v-if="optionsTo" class="absolute bg-gold-50 mt-1 h-56 overflow-auto border-2 border-gold-400 dark:border-gold-800 dark:bg-gold-600 rounded-md">
-                <div v-for="(currency, i) in symbol" :key="i" @click="openOptionsTo(currency)" class="flex items-center gap-2 p-3 cursor-pointer border-solid border-2 border-gold-400  dark:border-gold-800  dark:hover:bg-gold-700 hover:bg-gold-300">
-                  <img :src="`../../src/assets/flags/${currency.code.toLowerCase()}.svg`" alt="" class="w-7">
+              <div v-if="optionsTo" class="absolute bg-gold-50 mt-1 min-w-[332px] h-56 overflow-auto border-2 border-gold-400 dark:border-gold-800 dark:bg-gold-600 rounded-md">
+                <div v-for="(currency, i) in symbol" :key="i" @click="openOptionsTo(currency)" class="current-to flex items-center gap-2 p-3 cursor-pointer border-solid border-2 border-gold-400  dark:border-gold-800  dark:hover:bg-gold-700 hover:bg-gold-300">
+                  <img :src="`../../src/assets/flags/${currency.code.toLowerCase()}.svg`" alt="" class="w-7 h-7">
                   <p>{{ currency.code }} - {{ currency.name }}</p>
                 </div>
               </div>
@@ -42,7 +42,7 @@
             </div>
           </div>
         </div>
-        <div v-if="state.selectedOptionFrom" class="flex items-center justify-evenly">
+        <div v-if="state.selectedOptionFrom" class="flex flex-col items-center justify-evenly md:flex-row">
           <img @error="imagFallbackFrom" :src="imageFrom" alt=""  class="w-48 h-48 animate__animated animate__fadeInDown">
           <img src="../assets/rightarrow.png" alt="" class="w-11 h-11">
           <img v-if="state.selectedOptionTo" @error="imagFallbackTo" :src="imageTo" alt="" class="w-48 h-48 animate__animated animate__fadeInDown">
@@ -52,7 +52,7 @@
         </div>
       </div>
       <div class="display-result flex flex-col items-center justify-center pt-4 text-2xl dark:text-gold-50 text-gold-700 font-medium"></div>
-      <Graph v-if="showComponent" :selectedOptionFrom="state.selectedOptionFrom" :selectedOptionTo="state.selectedOptionTo"/>
+      <History v-if="showComponent" :selectedOptionFrom="state.selectedOptionFrom" :selectedOptionTo="state.selectedOptionTo"/>
     </div>
   </main>
 </template>
@@ -63,12 +63,12 @@ import api from '@/services/api'
 import useVuelidate from '@vuelidate/core'
 import { required } from '@vuelidate/validators'
 import Swal from 'sweetalert2'
-import Graph from './Graph.vue'
+import History from './History.vue'
 
 export default {
   name: 'ConverterBox',
   components: {
-    Graph,
+    History,
   },
 
   data() {
@@ -119,11 +119,11 @@ export default {
             symbol.value = Object.values(objetoDaAPI);
             localStorage.setItem('symbolData', JSON.stringify(symbol.value));
           } else {
-            throw new Error('A solicitação GET à API falhou');
+            throw new Error('The GET request to the API failed');
           }
         }
       } catch (error) {
-        console.error('Erro ao obter dados do cache ou da API:', error);
+        console.error('Error retrieving data from cache or API:', error);
       }
     };
 
@@ -165,6 +165,10 @@ export default {
         }
       } catch (error) {
         console.error("Error:", error);
+        Swal.fire({
+          icon: 'error',
+          title: 'Oops! Something went wrong.',
+        });
       }
     },
 
@@ -244,7 +248,7 @@ export default {
     },
 
     filterOptionsFrom() {
-      let dropdown_items = document.getElementsByTagName("li");
+      let dropdown_items = document.getElementsByClassName("current-from");
       if (!dropdown_items)
         return false;
       for (let i = 0; i < dropdown_items.length; i++) {
@@ -256,7 +260,7 @@ export default {
     },
 
     filterOptionsTo() {
-      let dropdown_items = document.getElementsByTagName("li");
+      let dropdown_items = document.getElementsByClassName("current-to");
       if (!dropdown_items)
         return false;
       for (let i = 0; i < dropdown_items.length; i++) {
